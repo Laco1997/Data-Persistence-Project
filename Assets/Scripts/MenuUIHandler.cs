@@ -17,11 +17,6 @@ public class MenuUIHandler : MonoBehaviour
         DataManager.Instance.playerName = playerName;
     }
 
-    //public void NewUsernameCreated(string name)
-    //{
-    //    MainManager.Instance.playerName = name;
-    //}
-
     public void StartNew()
     {
         SceneManager.LoadScene(1);

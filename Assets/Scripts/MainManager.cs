@@ -20,12 +20,22 @@ public class MainManager : MonoBehaviour
 
     public Text UsernameText;
 
+    string currentName;
+
     // Start is called before the first frame update
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
+
+        if (DataManager.Instance != null)
+        {
+            currentName = DataManager.Instance.playerName;
+            Debug.Log(currentName);
+            DataManager.Instance.LoadData();
+            SetHighScore(DataManager.Instance.playerName, DataManager.Instance.score);
+        }
+
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
         {
@@ -37,16 +47,11 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
-
-        if(DataManager.Instance != null)
-        {
-            SetUsername(DataManager.Instance.playerName);
-        }
     }
 
-    void SetUsername(string name)
+    void SetHighScore(string name, int score)
     {
-        UsernameText.text = "Best Score : " + name + " : 0";
+        UsernameText.text = "Best Score : " + name + " : " + score;
     }
 
     private void Update()
@@ -82,6 +87,30 @@ public class MainManager : MonoBehaviour
     public void GameOver()
     {
         m_GameOver = true;
+
+        CheckHighScore(m_Points);
+
         GameOverText.SetActive(true);
+    }
+
+    void CheckHighScore(int points)
+    {
+        if (DataManager.Instance != null)
+        {
+            if (points > DataManager.Instance.score)
+            {
+                DataManager.Instance.playerName = currentName;
+                DataManager.Instance.score = points;
+                SetHighScore(currentName, points);
+                DataManager.Instance.SaveData();
+            }
+        }
+        else
+        {
+            DataManager.Instance.playerName = currentName;
+            DataManager.Instance.score = points;
+            SetHighScore(currentName, points);
+            DataManager.Instance.SaveData();
+        }
     }
 }
